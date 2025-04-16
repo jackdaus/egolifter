@@ -1,0 +1,6 @@
+# Install dependencies 
+
+```
+uv sync
+```
+
