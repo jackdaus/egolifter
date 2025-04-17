@@ -453,6 +453,19 @@ wheels = [
 ]
 
 [[package]]
+name = "clip"
+version = "1.0"
+source = { git = "https://github.com/openai/CLIP.git#dcba3cb2e2827b402d2701e7e1c7d9fed8a20ef1" }
+dependencies = [
+    { name = "ftfy" },
+    { name = "packaging" },
+    { name = "regex" },
+    { name = "torch" },
+    { name = "torchvision" },
+    { name = "tqdm" },
+]
+
+[[package]]
 name = "colorama"
 version = "0.4.6"
 source = { registry = "https://pypi.org/simple" }
@@ -591,6 +604,15 @@ wheels = [
 ]
 
 [[package]]
+name = "dataclasses"
+version = "0.8"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/1f/12/7919c5d8b9c497f9180db15ea8ead6499812ea8264a6ae18766d93c59fe5/dataclasses-0.8.tar.gz", hash = "sha256:8479067f342acf957dc82ec415d355ab5edb7e7646b90dc6e2fd1d96ad084c97", size = 36581 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/fe/ca/75fac5856ab5cfa51bbbcefa250182e50441074fdc3f803f6e76451fab43/dataclasses-0.8-py3-none-any.whl", hash = "sha256:0201d89fa866f68c8ebd9d08ee6ff50c0b255f8ec63a71c16fda7af82bb887bf", size = 19041 },
+]
+
+[[package]]
 name = "debugpy"
 version = "1.8.14"
 source = { registry = "https://pypi.org/simple" }
@@ -671,6 +693,7 @@ name = "egolifter"
 version = "0.1.0"
 source = { virtual = "." }
 dependencies = [
+    { name = "clip" },
     { name = "distinctipy" },
     { name = "fsspec" },
     { name = "hdbscan" },
@@ -692,11 +715,13 @@ dependencies = [
     { name = "torchvision" },
     { name = "tyro" },
     { name = "viser" },
+    { name = "vrs" },
     { name = "wandb" },
 ]
 
 [package.metadata]
 requires-dist = [
+    { name = "clip", git = "https://github.com/openai/CLIP.git" },
     { name = "distinctipy", specifier = ">=1.3.4" },
     { name = "fsspec", specifier = ">=2025.3.2" },
     { name = "hdbscan", specifier = ">=0.8.40" },
@@ -718,6 +743,7 @@ requires-dist = [
     { name = "torchvision", specifier = ">=0.21.0" },
     { name = "tyro", specifier = ">=0.9.18" },
     { name = "viser", specifier = ">=0.2.23" },
+    { name = "vrs", specifier = ">=1.2.1" },
     { name = "wandb", specifier = ">=0.19.9" },
 ]
 
@@ -4397,6 +4423,15 @@ wheels = [
 ]
 
 [[package]]
+name = "typing"
+version = "3.10.0.0"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/b0/1b/835d4431805939d2996f8772aca1d2313a57e8860fec0e48e8e7dfe3a477/typing-3.10.0.0.tar.gz", hash = "sha256:13b4ad211f54ddbf93e5901a9967b1e07720c1d1b78d596ac6a439641aa1b130", size = 78962 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/f2/5d/865e17349564eb1772688d8afc5e3081a5964c640d64d1d2880ebaed002d/typing-3.10.0.0-py3-none-any.whl", hash = "sha256:12fbdfbe7d6cca1a42e485229afcb0b0c8259258cfb919b8a5e2a5c953742f89", size = 26320 },
+]
+
+[[package]]
 name = "typing-extensions"
 version = "4.13.2"
 source = { registry = "https://pypi.org/simple" }
@@ -4523,6 +4558,28 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/bf/b5/98660e835b63640008aa2c26a496477168e528b7726e9d2e3c291b859c42/viser-0.2.23.tar.gz", hash = "sha256:07610453da9f01c37eebb03f9611d3a3b18b20e302ca6a00fac36b8fa9bdad57", size = 28829986 }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/59/0f/1bc122f37a7483b3bfce9097327632203f74648ad94f200e2b0226a7ae8e/viser-0.2.23-py3-none-any.whl", hash = "sha256:36e3e60ef61024fec4404857897c1b301695b29350a17451c2ca769e6b26de00", size = 28887713 },
+]
+
+[[package]]
+name = "vrs"
+version = "1.2.1"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "dataclasses" },
+    { name = "numpy" },
+    { name = "typing" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/b6/5d/47e9585e9cf3d2cfd7bc745920b4e700d5b70fca7865ad2d6f2ea2f6df31/vrs-1.2.1.tar.gz", hash = "sha256:1254be9893c6c8750f04718c60252c23f05875c61eb93ec4587ffa560d386a1f", size = 21218 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/93/08/537e5ac9d90ec7f1c7b042bcc90adc9a1880fe4f5d168006080c06ae380a/vrs-1.2.1-cp310-cp310-macosx_10_9_x86_64.whl", hash = "sha256:f8c877507f65337c09d089971c9d1921e6da193ce39f1fb65c810efb2d17d2d6", size = 1021585 },
+    { url = "https://files.pythonhosted.org/packages/a1/20/9d636c8b0ceaa573fe5045ae8c477efcb77651ff34135eeae63d1a88b355/vrs-1.2.1-cp310-cp310-macosx_11_0_arm64.whl", hash = "sha256:5d77011cab7177f982d1aa424d15098cc40682cb91897bf62faf575c596ddf17", size = 1904774 },
+    { url = "https://files.pythonhosted.org/packages/10/5f/32089795602fb0642d8a6ca3a287eaeef45f3faf8c34837f679a221c011d/vrs-1.2.1-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:1702bb61be38a1094ee38121359c7c08b680137508fad926b08dc1cf4e93bba2", size = 2379417 },
+    { url = "https://files.pythonhosted.org/packages/5a/cb/b6e8388349c03863535580133a4083ee7139d3f13e8980c6b2ea09aae90d/vrs-1.2.1-cp311-cp311-macosx_10_9_x86_64.whl", hash = "sha256:6fd1c562478ced243781ac2f725ff6513b9f2f0e99043b8ebcc713768192a7fb", size = 1021619 },
+    { url = "https://files.pythonhosted.org/packages/1a/16/803e93743c150d5560190cfb55b3925210ffcf9aad5bcae3b69f860672cc/vrs-1.2.1-cp311-cp311-macosx_11_0_arm64.whl", hash = "sha256:8958d481a3e5cf58092152a37931f00a8a71dc8354776d3e2728790ff15a5dca", size = 1904709 },
+    { url = "https://files.pythonhosted.org/packages/1d/de/6a8dbd17397d713828a74e43c44e7487575b2a68182d2d83794b6b6e9d6e/vrs-1.2.1-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:b909d299ba378cfc5f07253ee563b2c527b96e7c8736fa08b79c6fc37fc6a8b5", size = 2379326 },
+    { url = "https://files.pythonhosted.org/packages/08/69/934fdf632ecf2ba3a4eeae0ce352b315d62deb951633ae82aa8d6edce0b2/vrs-1.2.1-cp312-cp312-macosx_10_9_x86_64.whl", hash = "sha256:70a161d63556f67055e9140a30c5852c5f0fa22caa0e9f34f2c270ff598791b4", size = 1023774 },
+    { url = "https://files.pythonhosted.org/packages/54/a4/24de1908473399262e730f6e6667b926daec338606451397364a39492dc8/vrs-1.2.1-cp312-cp312-macosx_11_0_arm64.whl", hash = "sha256:87ff4419160e1697f36c1c3b420cdf0aa50331553bb372f23aef1c23a67f9145", size = 1905463 },
+    { url = "https://files.pythonhosted.org/packages/f4/2b/783f02668e6e21849abd4d40ea28475d7c587ce6e919cf3ce17314b4c031/vrs-1.2.1-cp312-cp312-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:88d3274127476bc2b7f02a850e140b0d6325a896bdbc2fa0b35d9775afb60c7e", size = 2380936 },
 ]
 
 [[package]]
