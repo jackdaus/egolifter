@@ -25,6 +25,7 @@ dependencies = [
     "torch>=2.6.0",
     "torchaudio>=2.6.0",
     "torchvision>=0.21.0",
+    "tqdm>=4.67.1",
     "tyro>=0.9.18",
     "viser>=0.2.23",
     "vrs>=1.2.1",
