@@ -19,6 +19,13 @@ captures
 camera_paths
 Grounded-Segment-Anything
 gsplat
+.datasets
+adt
+adt_processed
+checkpoints 
+
+# Rerun files
+*.rrd
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
