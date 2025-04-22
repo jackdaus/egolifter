@@ -23,7 +23,7 @@ dependencies = [
     "projectaria-tools[all]>=1.5.7",
     "splines>=0.3.2",
     "tdqm>=0.0.1",
-    "torch>=2.6.0",
+    "torch>=2.4.0",
     "torchaudio>=2.6.0",
     "torchvision>=0.21.0",
     "tqdm>=4.67.1",
@@ -34,12 +34,17 @@ dependencies = [
 ]
 
 [[tool.uv.index]]
+name = "gsplat"
+url = "https://docs.gsplat.studio/whl/pt24cu121"
+
+[[tool.uv.index]]
 name = "pytorch-cu121"
 url = "https://download.pytorch.org/whl/cu121"
 explicit = true
 
 [tool.uv.sources]
 clip = { git = "https://github.com/openai/CLIP.git" }
+gsplat = { index = "gsplat" }
 
 [dependency-groups]
 dev = [

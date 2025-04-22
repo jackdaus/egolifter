@@ -98,3 +98,39 @@ To create a Jupyter kernel, run,
 ```bash
 uv run ipython kernel install --user --env VIRTUAL_ENV $(pwd)/.venv --name=egolifter
 ```
+
+# Run Training 
+
+```bash
+source setup_env.bash
+
+SCENE_NAME=Apartment_release_golden_skeleton_seq100_10s_sample
+ADT_PROCESSED_ROOT=adt_processed
+
+uv run python train_lightning.py \
+    scene.scene_name=${SCENE_NAME} \
+    scene.data_root=${ADT_PROCESSED_ROOT} \
+    exp_name=3dgs \
+    output_root=./output/adt \
+    wandb.project=egolifter_adt
+```
+
+# View results
+
+```bash
+# Select one of the output folder from below
+# FOLDER_NAME=unc_2d_unet_egolifter
+# FOLDER_NAME=unc_2d_unet_egolifter_static
+# FOLDER_NAME=deform_egolifter_deform
+SCENE_NAME=Apartment_release_golden_skeleton_seq100_10s_sample
+FOLDER_NAME=vanilla_3dgs
+ADT_PROCESSED_ROOT=adt_processed
+
+# This will start a local server 
+# open the browser and go to the link for visualization
+uv run python viewer.py \
+    ./output/adt/${SCENE_NAME}/${FOLDER_NAME} \
+    --data_root ${ADT_PROCESSED_ROOT}  \
+    --reorient disable \
+    --feat_pca
+```

@@ -353,7 +353,11 @@ class VanillaGaussian(L.LightningModule):
         visibility_filter = render_pkg["visibility_filter"]
         radii = render_pkg["radii"]
         viewspace_point_tensor = render_pkg["viewspace_points"]
-        
+        # print("self.gaussians.max_radii2D", self.gaussians.max_radii2D.shape)
+        # print("radii", radii.shape)
+        # print("visibility_filter", visibility_filter.shape)
+
+
         # Densification
         if iteration < self.cfg.opt.densify_until_iter:
             # # Keep track of max radii in image-space for pruning

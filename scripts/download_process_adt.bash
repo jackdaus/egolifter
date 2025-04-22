@@ -81,45 +81,45 @@ declare -a SCENE_NAMES=(
 # done
 
 # Rectify images and format the folder structure
-# for SCENE_NAME in "${SCENE_NAMES[@]}"; do
-#     python scripts/process_adt_3dgs.py \
-#         --data_root ${ADT_DATA_ROOT} \
-#         --output_root ${ADT_PROCESSED_ROOT} \
-#         --sequence_name ${SCENE_NAME}
-# done
+for SCENE_NAME in "${SCENE_NAMES[@]}"; do
+    python scripts/process_adt_3dgs.py \
+        --data_root ${ADT_DATA_ROOT} \
+        --output_root ${ADT_PROCESSED_ROOT} \
+        --sequence_name ${SCENE_NAME}
+done
 
 wait
 
 # Generate SAM segmentation results
 # NOTE JD: Using aggressive stride to speed up the process for testing
-for SCENE_NAME in "${SCENE_NAMES[@]}"; do
-    python scripts/generate_gsa_results.py \
-        -i ${ADT_PROCESSED_ROOT}/${SCENE_NAME} \
-        --class_set none \
-        --sam_variant sam \
-        --max_longer_side 512 \
-        --no_clip \
-        --stride 10
-done
+# for SCENE_NAME in "${SCENE_NAMES[@]}"; do
+#     python scripts/generate_gsa_results.py \
+#         -i ${ADT_PROCESSED_ROOT}/${SCENE_NAME} \
+#         --class_set none \
+#         --sam_variant sam \
+#         --max_longer_side 512 \
+#         --no_clip \
+#         --stride 10
+# done
 
 # Generate evaluation target for query-based segmentation
-for SCENE_NAME in "${SCENE_NAMES[@]}"; do
-    uv run scripts/generate_2dseg_query.py \
-        --data_root ${ADT_PROCESSED_ROOT} \
-        --scene_name ${SCENE_NAME} &
-done
+# for SCENE_NAME in "${SCENE_NAMES[@]}"; do
+#     python scripts/generate_2dseg_query.py \
+#         --data_root ${ADT_PROCESSED_ROOT} \
+#         --scene_name ${SCENE_NAME} &
+# done
 
-wait
+# wait
 
-for SCENE_NAME in "${SCENE_NAMES[@]}"; do
-    uv run scripts/generate_2dseg_query_sample.py \
-        --data_root ${ADT_PROCESSED_ROOT} \
-        --scene_name ${SCENE_NAME}
-done
+# for SCENE_NAME in "${SCENE_NAMES[@]}"; do
+#     python scripts/generate_2dseg_query_sample.py \
+#         --data_root ${ADT_PROCESSED_ROOT} \
+#         --scene_name ${SCENE_NAME}
+# done
 
-for SCENE_NAME in "${SCENE_NAMES[@]}"; do
-    ur run scripts/generate_3dbox_query.py \
-        --raw_root ${ADT_DATA_ROOT} \
-        --data_root ${ADT_PROCESSED_ROOT} \
-        --scene_name ${SCENE_NAME}
-done
+# for SCENE_NAME in "${SCENE_NAMES[@]}"; do
+#     python scripts/generate_3dbox_query.py \
+#         --raw_root ${ADT_DATA_ROOT} \
+#         --data_root ${ADT_PROCESSED_ROOT} \
+#         --scene_name ${SCENE_NAME}
+# done
