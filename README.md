@@ -6,9 +6,7 @@ This project is a fork of [EgoLifter](https://github.com/facebookresearch/egolif
 
 ## Install dependencies 
 
-We are using the wonderful `uv` to manage packages. If you don't already have `uv` installed, install it [here](https://docs.astral.sh/uv).
-
-Clone this repo. 
+First, clone this repo. 
 
 ```bash
 git clone https://github.com/jackdaus/egolifter.git
@@ -16,7 +14,8 @@ git clone https://github.com/jackdaus/egolifter.git
 cd egolifter
 ```
 
-Then install packages.
+
+We are using [uv](https://docs.astral.sh/uv) to manage packages. Make sure you have it installed. Then, to install our dependencies, run,
 
 ```bash
 uv sync
@@ -89,17 +88,18 @@ Make sure your environment variables are set.
 ```bash
 source setup_env.bash
 ADT_PROCESSED_ROOT=${HOME}/cs-747-project/adt_processed
-```
-
-```bash
 OUT_PATH=${HOME}/cs-747-project/output/adt
 SCENE_NAME=Apartment_release_golden_skeleton_seq100_10s_sample
+```
 
+Run the training.
+
+```bash
 uv run python train_lightning.py \
     scene.scene_name=${SCENE_NAME} \
     scene.data_root=${ADT_PROCESSED_ROOT} \
     exp_name=3dgs \
-    output_root=$OUT_PATH \
+    output_root=${OUT_PATH} \
     wandb.project=egolifter_adt
 ```
 
@@ -117,20 +117,23 @@ uv run python viewer.py \
 
 ## Train an Egolifter model
 
-Set the `OUT_PATH` variable to where you want to save the output of the training run.
+Next, we will try training the full EgoLifter setup. Set the environment variables as needed. This training takes a couple of hours.
 
 ```bash
+source setup_env.bash
+SCENE_NAME=Apartment_release_work_skeleton_seq131
+ADT_PROCESSED_ROOT=${HOME}/cs-747-project/adt_processed
 OUT_PATH=${HOME}/cs-747-project/output/adt
 
 uv run python train_lightning.py \
-    scene.scene_name="Apartment_release_golden_skeleton_seq100_10s_sample" \
-    scene.data_root=$ADT_PROCESSED_ROOT \
+	scene.scene_name=${SCENE_NAME} \
+    scene.data_root=${ADT_PROCESSED_ROOT} \
     model=unc_2d_unet \
     model.unet_acti=sigmoid \
     model.dim_extra=16 \
     lift.use_contr=True \
     exp_name=egolifter \
-    output_root=$OUT_PATH \
+    output_root=${OUT_PATH} \
     wandb.project=egolifter_adt
 ```
 
@@ -149,7 +152,7 @@ uv run python viewer.py \
 
 # Extra
 
-## Run visualizer of an ADT dataset (Optional)
+## Run visualizer of an ADT dataset (optional)
 
 For WSL, you can run the rerun server to enable viewing on windows. This will forward the app to localhost:9090. (To run this command, make sure the python venv is activated.)
 
@@ -169,7 +172,7 @@ for example,
 uvx --from projectaria-tools viewer_projects_adt --sequence_path ./adt/Apartment_release_multiskeleton_party_seq121_71292 --rrd_output_path Apartment_release_multiskeleton_party_seq121_71292.rrd
 ```
 
-## Jupyter (Optional)
+## Jupyter (optional)
 
 To create a Jupyter kernel, run, 
 
