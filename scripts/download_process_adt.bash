@@ -71,14 +71,14 @@ declare -a SCENE_NAMES=(
     "Apartment_release_golden_skeleton_seq100_10s_sample"
 )
 
-# # Download
-# for SCENE_NAME in "${SCENE_NAMES_NEW[@]}"; do
-#     aria_dataset_downloader \
-#         -c ${ADT_DATA_ROOT}/ADT_download_urls.json \
-#         -o ${ADT_DATA_ROOT}/ \
-#         -d 0 1 2 3 6 7 \
-#         -l ${SCENE_NAME}
-# done
+# Download
+for SCENE_NAME in "${SCENE_NAMES_NEW[@]}"; do
+    aria_dataset_downloader \
+        -c ${ADT_DATA_ROOT}/ADT_download_urls.json \
+        -o ${ADT_DATA_ROOT}/ \
+        -d 0 1 2 3 6 7 \
+        -l ${SCENE_NAME}
+done
 
 # Rectify images and format the folder structure
 for SCENE_NAME in "${SCENE_NAMES[@]}"; do
@@ -91,16 +91,14 @@ done
 wait
 
 # Generate SAM segmentation results
-# NOTE JD: Using aggressive stride to speed up the process for testing
-# for SCENE_NAME in "${SCENE_NAMES[@]}"; do
-#     python scripts/generate_gsa_results.py \
-#         -i ${ADT_PROCESSED_ROOT}/${SCENE_NAME} \
-#         --class_set none \
-#         --sam_variant sam \
-#         --max_longer_side 512 \
-#         --no_clip \
-#         --stride 10
-# done
+for SCENE_NAME in "${SCENE_NAMES[@]}"; do
+    python scripts/generate_gsa_results.py \
+        -i ${ADT_PROCESSED_ROOT}/${SCENE_NAME} \
+        --class_set none \
+        --sam_variant sam \
+        --max_longer_side 512 \
+        --no_clip
+done
 
 # Generate evaluation target for query-based segmentation
 # for SCENE_NAME in "${SCENE_NAMES[@]}"; do
