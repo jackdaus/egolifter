@@ -48,7 +48,11 @@ explicit = true
 clip = { git = "https://github.com/openai/CLIP.git" }
 gsplat = { index = "gsplat" }
 segment-anything = { git = "https://github.com/IDEA-Research/Grounded-Segment-Anything.git", subdirectory = "segment_anything" }
-groundingdino = { git = "https://github.com/IDEA-Research/Grounded-Segment-Anything.git", subdirectory = "GroundingDINO" }
+groundingdino = { git = "https://github.com/IDEA-Research/Grounded-Segment-Anything", subdirectory = "GroundingDINO" }
+
+[tool.uv]
+# TEMP FIX: the groundingdino repo doesn't correctly declare it's own dependencies; it does not work with torch=2.6. So we pin it here.
+build-constraint-dependencies = ["torch==2.5.1"]
 
 [dependency-groups]
 dev = [
