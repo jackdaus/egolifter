@@ -19,6 +19,18 @@ captures
 camera_paths
 Grounded-Segment-Anything
 gsplat
+.datasets
+adt
+adt_processed
+checkpoints 
+
+# Downloaded model weights
+sam_vit_h_4b8939.pth
+groundingdino_swint_ogc.pth
+sam_vit_b_01ec64.pth
+
+# Rerun files
+*.rrd
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

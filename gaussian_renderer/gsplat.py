@@ -96,7 +96,13 @@ def render(
 
     # [1, H, W, 3] -> [3, H, W]
     rendered_image = render_colors[0].permute(2, 0, 1)
-    radii = info["radii"].squeeze(0) # [N,]
+    # radii = info["radii"].squeeze(0) # [N,]
+    radii = info["radii"].squeeze(0)          # (N,2) or (N,)
+    if radii.ndim == 2:                       # gsplat ≥ 0.2.*
+        # Option A: take the larger of the two projected radii
+        radii = radii.max(dim=-1).values      # (N,)
+        # Option B (keeps original semantics even closer):
+        # radii = radii[:, 0]                 # just use x–radius
     try:
         info["means2d"].retain_grad() # [1, N, 2]
     except:
