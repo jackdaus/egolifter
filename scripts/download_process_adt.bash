@@ -17,7 +17,6 @@ cp assets/vignette_ov7251.png ${ADT_DATA_ROOT} # Vignette image for the SLAM cam
 # https://github.com/facebookresearch/projectaria_tools/blob/main/projects/AriaDigitalTwinDatasetTools/data_provider/AriaDigitalTwinDataPathsProvider.h#L38
 
 # scene names using the old data format
-# JD TEMP: test with one scene
 # declare -a SCENE_NAMES=(
 #     "Apartment_release_multiskeleton_party_seq121"
 #     "Apartment_release_multiskeleton_party_seq122"
@@ -63,13 +62,21 @@ cp assets/vignette_ov7251.png ${ADT_DATA_ROOT} # Vignette image for the SLAM cam
 #     "Apartment_release_work_skeleton_seq140_M1292"
 # )
 
-# # Only for debugging
+# Test with a single scene
 declare -a SCENE_NAMES_NEW=(
-    "Apartment_release_golden_skeleton_seq100_10s_sample_M1292"
+    "Apartment_release_work_skeleton_seq131_M1292"
 )
 declare -a SCENE_NAMES=(
-    "Apartment_release_golden_skeleton_seq100_10s_sample"
+    "Apartment_release_work_skeleton_seq131"
 )
+
+# Only for debugging
+# declare -a SCENE_NAMES_NEW=(
+#     "Apartment_release_golden_skeleton_seq100_10s_sample_M1292"
+# )
+# declare -a SCENE_NAMES=(
+#     "Apartment_release_golden_skeleton_seq100_10s_sample"
+# )
 
 # Download
 for SCENE_NAME in "${SCENE_NAMES_NEW[@]}"; do
