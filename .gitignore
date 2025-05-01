@@ -26,6 +26,7 @@ adt_processed_new
 adt_0_input_video
 adt_1_init_masks
 adt_2_masks
+adt_processed_sam2
 checkpoints 
 
 # Downloaded model weights
