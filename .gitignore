@@ -22,6 +22,10 @@ gsplat
 .datasets
 adt
 adt_processed
+adt_processed_new
+adt_0_input_video
+adt_1_init_masks
+adt_2_masks
 checkpoints 
 
 # Downloaded model weights
