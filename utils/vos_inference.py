@@ -95,6 +95,8 @@ def save_masks_to_dir(
 ):
     """Save masks to a directory as PNG files."""
     os.makedirs(os.path.join(output_mask_dir, video_name), exist_ok=True)
+    # Remove jpg or jpeg extension if it exists in the file name
+    frame_name = frame_name.rsplit('.', 1)[0]
     if not per_obj_png_file:
         output_mask = put_per_obj_mask(per_obj_output_mask, height, width)
         output_mask_path = os.path.join(
