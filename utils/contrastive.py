@@ -177,6 +177,7 @@ class ContrastManager():
         return loss_contr
 
     def contrastive_loss(
+        self,
         features: torch.Tensor, 
         instance_labels: torch.Tensor, 
         temperature: float, 
