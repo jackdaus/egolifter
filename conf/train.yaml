@@ -65,6 +65,7 @@ lift:
   temperature: 100.0
   lambda_contr: 0.1
   n_samples: 4096
+  lift_delay_n_steps: 0 # The iteration to start the lift. By default, it feautre lifting is started at the first iteration.
 
 pipe:
   convert_SHs_python: !!bool False

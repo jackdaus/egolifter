@@ -308,7 +308,7 @@ class VanillaGaussian(L.LightningModule):
             ).mean().double()
 
         render_pkg_feat = None
-        if self.use_contrast and viewpoint_cam.camera_name == "rgb":
+        if self.use_contrast and viewpoint_cam.camera_name == "rgb" and self.global_step >= self.cfg.lift.lift_delay_n_steps:
             loss_contr, render_pkg_feat = self.forward_and_contr_loss(batch, render_func=render_func)
             losses['loss_mask_contr'] = loss_contr
             losses['loss_total'] = losses['loss_total'] + self.cfg.lift.lambda_contr * loss_contr
