@@ -35,7 +35,7 @@ from scene.cameras import camera_to_JSON, Camera
 
 from utils.constants import BAD_ARIA_PILOT_SCENES
 from utils.contrastive import ContrastManager
-
+from utils.contrastive_v2 import ContrastManagerV2
 
 class CameraDataset(Dataset):
     '''
@@ -244,12 +244,22 @@ class Scene:
             self.contrast_manager = None
         else:
             # Initialize a help class for segmentation contrastive lifting
-            self.contrast_manager = ContrastManager(
-                cfg, 
-                example_cam=self.train_cameras[0],
-                valid_mask_by_name=self.valid_mask_by_name,
-                scene_type=self.scene_type,
-            )
+            if self.cfg.lift.name == "default":
+                self.contrast_manager = ContrastManager(
+                    cfg, 
+                    example_cam=self.train_cameras[0],
+                    valid_mask_by_name=self.valid_mask_by_name,
+                    scene_type=self.scene_type,
+                )
+            elif self.cfg.lift.name == "v2":
+                self.contrast_manager = ContrastManagerV2(
+                    cfg, 
+                    example_cam=self.train_cameras[0],
+                    valid_mask_by_name=self.valid_mask_by_name,
+                    scene_type=self.scene_type,
+                )
+            else:
+                raise NotImplementedError(f"Contrast manager {self.cfg.lift.name} is does not exist!")
 
             # Compute a normalization factor for exposure
             exposure_gain = []
