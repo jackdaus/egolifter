@@ -8,6 +8,9 @@ def get_model(cfg, scene):
     if cfg.model.name == "vanilla":
         from .vanilla import VanillaGaussian
         return VanillaGaussian(cfg, scene)
+    if cfg.model.name == "vanilla_contrast_v3":
+        from .vanilla_constrast_v3 import VanillaContrastV3
+        return VanillaContrastV3(cfg, scene)
     elif cfg.model.name == "unc_2d_unet":
         from .unc_2d_unet import Unc2DUnet
         return Unc2DUnet(cfg, scene)

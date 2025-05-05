@@ -193,6 +193,7 @@ class GaussianModel(nn.Module):
         features[:, 3:, 1:] = 0.0
 
         # Make features_extra initialized from a small normal distribution
+        # NOTE: maybe something to revisit?
         features_extra = 1e-3 * torch.normal(
             mean=0.0, std=1.0, 
             size=(fused_color.shape[0], self.dim_extra)

@@ -53,7 +53,7 @@ class VanillaGaussian(L.LightningModule):
             
         bg_color = [1, 1, 1] if cfg.model.white_background else [0, 0, 0]
         self.background = torch.tensor(bg_color, dtype=torch.float32, device="cuda")
-        
+        print("Initializing VanillaGaussian...")
         # Init the Gaussians Model
         self.gaussians = GaussianModel(
             self.cfg.model.sh_degree, 

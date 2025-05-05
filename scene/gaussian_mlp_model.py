@@ -66,10 +66,19 @@ class GaussianMLPModel(nn.Module):
         self._xyz = None
         self._features_dc = None
         self._features_rest = None
-        self._features_extra = None # Shape should be (num_points, dim_extra)
+        # self._features_extra = None # Shape should be (num_points, dim_extra)
         self._scaling = None
         self._rotation = None
         self._opacity = None
+
+        # MLP for features
+        in_dim = 3 + 3 + 1  # xyz  +  log‑scales  + opacity   (change as desired)
+        hidden = 128
+        self.extra_mlp = nn.Sequential(
+            nn.Linear(in_dim, hidden), 
+            nn.ReLU(),
+            nn.Linear(hidden, dim_extra)
+        )
         
         # Non-optimizable Buffers
         self.register_buffer("active_sh_degree", torch.tensor(0, dtype=torch.int32))
@@ -83,12 +92,20 @@ class GaussianMLPModel(nn.Module):
         self.optimizer = None
         
         self.setup_functions()
-        
+    
+    # Input into the mlp. We make sure to call detach since we don't want to backprop through the mlp
+    def _mlp_input(self):
+        return torch.cat([
+            self._xyz.detach(),                   # 3
+            self._scaling.detach(),               # 3
+            self._opacity.detach()                # 1
+        ], dim=1)
+
     def check_nan(self):
         nan_xyz = torch.isnan(self._xyz).sum()
         nan_features_dc = torch.isnan(self._features_dc).sum()
         nan_features_rest = torch.isnan(self._features_rest).sum()
-        nan_features_extra = torch.isnan(self._features_extra).sum()
+        # nan_features_extra = torch.isnan(self._features_extra).sum()
         nan_scaling = torch.isnan(self._scaling).sum()
         nan_rotation = torch.isnan(self._rotation).sum()
         nan_opacity = torch.isnan(self._opacity).sum()
@@ -103,9 +120,9 @@ class GaussianMLPModel(nn.Module):
         if nan_features_rest > 0:
             print("Nan in features_rest")
             flag = True
-        if nan_features_extra > 0:
-            print("Nan in features_extra")
-            flag = True
+        # if nan_features_extra > 0:
+        #     print("Nan in features_extra")
+        #     flag = True
         if nan_scaling > 0:
             print("Nan in scaling")
             flag = True
@@ -152,7 +169,7 @@ class GaussianMLPModel(nn.Module):
     
     @property
     def get_features_extra(self):
-        return self._features_extra
+        return self.extra_mlp(self._mlp_input())  
     
     @property
     def get_opacity(self):
@@ -175,7 +192,7 @@ class GaussianMLPModel(nn.Module):
         self._xyz = nn.Parameter(torch.zeros((n_points, 3)).requires_grad_(True))
         self._features_dc = nn.Parameter(torch.zeros((n_points, 1, 3)).requires_grad_(True))
         self._features_rest = nn.Parameter(torch.zeros((n_points, (self.max_sh_degree + 1) ** 2 - 1, 3)).requires_grad_(True))
-        self._features_extra = nn.Parameter(torch.zeros((n_points, self.dim_extra)).requires_grad_(True))
+        # self._features_extra = nn.Parameter(torch.zeros((n_points, self.dim_extra)).requires_grad_(True))
         self._scaling = nn.Parameter(torch.zeros((n_points, 3)).requires_grad_(True))
         self._rotation = nn.Parameter(torch.zeros((n_points, 4)).requires_grad_(True))
         self._opacity = nn.Parameter(torch.zeros((n_points, 1)).requires_grad_(True))
@@ -212,7 +229,7 @@ class GaussianMLPModel(nn.Module):
         self._xyz = nn.Parameter(fused_point_cloud.requires_grad_(True))
         self._features_dc = nn.Parameter(features[:,:,0:1].transpose(1, 2).contiguous().requires_grad_(True))
         self._features_rest = nn.Parameter(features[:,:,1:].transpose(1, 2).contiguous().requires_grad_(True))
-        self._features_extra = nn.Parameter(features_extra.contiguous().requires_grad_(True))
+        # self._features_extra = nn.Parameter(features_extra.contiguous().requires_grad_(True))
         self._scaling = nn.Parameter(scales.requires_grad_(True))
         self._rotation = nn.Parameter(rots.requires_grad_(True))
         self._opacity = nn.Parameter(opacities.requires_grad_(True))
@@ -227,7 +244,7 @@ class GaussianMLPModel(nn.Module):
             {'params': [self._xyz], 'lr': training_args.position_lr_init * self.spatial_lr_scale, "name": "xyz"},
             {'params': [self._features_dc], 'lr': training_args.color_lr, "name": "f_dc"},
             {'params': [self._features_rest], 'lr': training_args.color_lr / 20.0, "name": "f_rest"},
-            {'params': [self._features_extra], 'lr': training_args.feature_lr, "name": "f_extra"},
+            # {'params': [self._features_extra], 'lr': training_args.feature_lr, "name": "f_extra"},
             {'params': [self._opacity], 'lr': training_args.opacity_lr, "name": "opacity"},
             {'params': [self._scaling], 'lr': training_args.scaling_lr, "name": "scaling"},
             {'params': [self._rotation], 'lr': training_args.rotation_lr, "name": "rotation"}
@@ -254,9 +271,9 @@ class GaussianMLPModel(nn.Module):
             l.append('f_dc_{}'.format(i))
         for i in range(self._features_rest.shape[1]*self._features_rest.shape[2]):
             l.append('f_rest_{}'.format(i))
-        if not skip_extra:
-            for i in range(self._features_extra.shape[1]):
-                l.append('f_extra_{}'.format(i))
+        # if not skip_extra:
+        #     for i in range(self._features_extra.shape[1]):
+        #         l.append('f_extra_{}'.format(i))
         l.append('opacity')
         for i in range(self._scaling.shape[1]):
             l.append('scale_{}'.format(i))
@@ -264,6 +281,7 @@ class GaussianMLPModel(nn.Module):
             l.append('rot_{}'.format(i))
         return l
 
+    # TODO save extra feature dims
     def save_ply(self, path, skip_extra=False): # skip_extra to make it useable by the renderer
         mkdir_p(os.path.dirname(path))
 
@@ -271,7 +289,7 @@ class GaussianMLPModel(nn.Module):
         normals = np.zeros_like(xyz)
         f_dc = self._features_dc.detach().transpose(1, 2).flatten(start_dim=1).contiguous().cpu().numpy()
         f_rest = self._features_rest.detach().transpose(1, 2).flatten(start_dim=1).contiguous().cpu().numpy()
-        f_extra = self._features_extra.detach().cpu().numpy()
+        # f_extra = self._features_extra.detach().cpu().numpy()
         opacities = self._opacity.detach().cpu().numpy()
         scale = self._scaling.detach().cpu().numpy()
         rotation = self._rotation.detach().cpu().numpy()
@@ -282,7 +300,8 @@ class GaussianMLPModel(nn.Module):
         if skip_extra:
             attributes = np.concatenate((xyz, normals, f_dc, f_rest, opacities, scale, rotation), axis=1)
         else:
-            attributes = np.concatenate((xyz, normals, f_dc, f_rest, f_extra, opacities, scale, rotation), axis=1)
+            raise NotImplementedError("Saving extra features not implemented yet")
+            # attributes = np.concatenate((xyz, normals, f_dc, f_rest, f_extra, opacities, scale, rotation), axis=1)
         elements[:] = list(map(tuple, attributes))
         el = PlyElement.describe(elements, 'vertex')
         PlyData([el]).write(path)
@@ -344,7 +363,7 @@ class GaussianMLPModel(nn.Module):
         self._xyz = nn.Parameter(torch.tensor(xyz, dtype=torch.float, device="cuda").requires_grad_(True))
         self._features_dc = nn.Parameter(torch.tensor(features_dc, dtype=torch.float, device="cuda").transpose(1, 2).contiguous().requires_grad_(True))
         self._features_rest = nn.Parameter(torch.tensor(features_rest, dtype=torch.float, device="cuda").transpose(1, 2).contiguous().requires_grad_(True))
-        self._features_extra = nn.Parameter(torch.tensor(features_extra, dtype=torch.float, device="cuda").contiguous().requires_grad_(True))
+        # self._features_extra = nn.Parameter(torch.tensor(features_extra, dtype=torch.float, device="cuda").contiguous().requires_grad_(True))
         self._opacity = nn.Parameter(torch.tensor(opacities, dtype=torch.float, device="cuda").requires_grad_(True))
         self._scaling = nn.Parameter(torch.tensor(scales, dtype=torch.float, device="cuda").requires_grad_(True))
         self._rotation = nn.Parameter(torch.tensor(rots, dtype=torch.float, device="cuda").requires_grad_(True))
@@ -361,7 +380,7 @@ class GaussianMLPModel(nn.Module):
             self._xyz.grad = None
             self._features_dc.grad = None
             self._features_rest.grad = None
-            self._features_extra.grad = None
+            # self._features_extra.grad = None
             self._opacity.grad = None
             self._scaling.grad = None
             self._rotation.grad = None
@@ -374,7 +393,7 @@ class GaussianMLPModel(nn.Module):
         self._xyz = optimizable_tensors["xyz"]
         self._features_dc = optimizable_tensors["f_dc"]
         self._features_rest = optimizable_tensors["f_rest"]
-        self._features_extra = optimizable_tensors["f_extra"]
+        # self._features_extra = optimizable_tensors["f_extra"]
         self._opacity = optimizable_tensors["opacity"]
         self._scaling = optimizable_tensors["scaling"]
         self._rotation = optimizable_tensors["rotation"]
@@ -391,18 +410,19 @@ class GaussianMLPModel(nn.Module):
             self._xyz = nn.Parameter(self._xyz[valid_points_mask]).requires_grad_(True)
             self._features_dc = nn.Parameter(self._features_dc[valid_points_mask]).requires_grad_(True)
             self._features_rest = nn.Parameter(self._features_rest[valid_points_mask]).requires_grad_(True)
-            self._features_extra = nn.Parameter(self._features_extra[valid_points_mask]).requires_grad_(True)
+            # self._features_extra = nn.Parameter(self._features_extra[valid_points_mask]).requires_grad_(True)
             self._opacity = nn.Parameter(self._opacity[valid_points_mask]).requires_grad_(True)
             self._scaling = nn.Parameter(self._scaling[valid_points_mask]).requires_grad_(True)
             self._rotation = nn.Parameter(self._rotation[valid_points_mask]).requires_grad_(True)
             self.max_radii2D = self.max_radii2D[valid_points_mask]
 
 
-    def densification_postfix(self, new_xyz, new_features_dc, new_features_rest, new_features_extra, new_opacities, new_scaling, new_rotation):
+    def densification_postfix(self, new_xyz, new_features_dc, new_features_rest, new_opacities, new_scaling, new_rotation):
+    # def densification_postfix(self, new_xyz, new_features_dc, new_features_rest, new_features_extra, new_opacities, new_scaling, new_rotation):
         d = {"xyz": new_xyz,
         "f_dc": new_features_dc,
         "f_rest": new_features_rest,
-        "f_extra": new_features_extra,
+        # "f_extra": new_features_extra,
         "opacity": new_opacities,
         "scaling" : new_scaling,
         "rotation" : new_rotation}
@@ -411,7 +431,7 @@ class GaussianMLPModel(nn.Module):
         self._xyz = optimizable_tensors["xyz"]
         self._features_dc = optimizable_tensors["f_dc"]
         self._features_rest = optimizable_tensors["f_rest"]
-        self._features_extra = optimizable_tensors["f_extra"]
+        # self._features_extra = optimizable_tensors["f_extra"]
         self._opacity = optimizable_tensors["opacity"]
         self._scaling = optimizable_tensors["scaling"]
         self._rotation = optimizable_tensors["rotation"]
@@ -443,10 +463,11 @@ class GaussianMLPModel(nn.Module):
         new_rotation = self._rotation[selected_pts_mask].repeat(N,1)
         new_features_dc = self._features_dc[selected_pts_mask].repeat(N,1,1)
         new_features_rest = self._features_rest[selected_pts_mask].repeat(N,1,1)
-        new_features_extra = self._features_extra[selected_pts_mask].repeat(N,1)
+        # new_features_extra = self._features_extra[selected_pts_mask].repeat(N,1)
         new_opacity = self._opacity[selected_pts_mask].repeat(N,1)
 
-        self.densification_postfix(new_xyz, new_features_dc, new_features_rest, new_features_extra, new_opacity, new_scaling, new_rotation)
+        # self.densification_postfix(new_xyz, new_features_dc, new_features_rest, new_features_extra, new_opacity, new_scaling, new_rotation)
+        self.densification_postfix(new_xyz, new_features_dc, new_features_rest,                       new_opacity, new_scaling, new_rotation)
 
         prune_filter = torch.cat((selected_pts_mask, torch.zeros(N * selected_pts_mask.sum(), device="cuda", dtype=bool)))
         self.prune_points(prune_filter)
@@ -462,12 +483,13 @@ class GaussianMLPModel(nn.Module):
         new_xyz = self._xyz[selected_pts_mask]
         new_features_dc = self._features_dc[selected_pts_mask]
         new_features_rest = self._features_rest[selected_pts_mask]
-        new_features_extra = self._features_extra[selected_pts_mask]
+        # new_features_extra = self._features_extra[selected_pts_mask]
         new_opacities = self._opacity[selected_pts_mask]
         new_scaling = self._scaling[selected_pts_mask]
         new_rotation = self._rotation[selected_pts_mask]
 
-        self.densification_postfix(new_xyz, new_features_dc, new_features_rest, new_features_extra, new_opacities, new_scaling, new_rotation)
+        # self.densification_postfix(new_xyz, new_features_dc, new_features_rest, new_features_extra, new_opacities, new_scaling, new_rotation)
+        self.densification_postfix(new_xyz, new_features_dc, new_features_rest,                       new_opacities, new_scaling, new_rotation)
 
     def densify_and_prune(self, max_grad, min_opacity, extent, max_screen_size):
         grads = self.xyz_gradient_accum / self.denom
@@ -490,6 +512,13 @@ class GaussianMLPModel(nn.Module):
         torch.cuda.empty_cache()
 
 
-    def add_densification_stats(self, vs_grad_norm, update_filter):
-        self.xyz_gradient_accum[update_filter] += vs_grad_norm
+    # NOTE: copy from the Gsplat class. A lot of code is duplicated... need to clean up later.
+    def add_densification_stats(self, viewspace_point_tensor, update_filter, width, height):
+        grad = viewspace_point_tensor.grad.squeeze(0) # [N, 2]
+
+        # Normalize the gradient to [-1, 1] screen size
+        grad[:, 0] *= width * 0.5
+        grad[:, 1] *= height * 0.5
+
+        self.xyz_gradient_accum[update_filter] += torch.norm(grad[update_filter,:2], dim=-1, keepdim=True)
         self.denom[update_filter] += 1

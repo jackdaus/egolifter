@@ -149,7 +149,8 @@ class CameraDataset(Dataset):
 
 class Scene:
 
-    gaussians : GaussianModel
+    # JD EDIT: this gaussians object seems to never be used. I am commenting it out for clarity.
+    # gaussians : GaussianModel
 
     def __init__(
             self, 
@@ -422,9 +423,9 @@ class Scene:
 
         return render_image, gt_image
 
-    def save(self, iteration):
-        point_cloud_path = os.path.join(self.model_path, f"point_cloud/iteration_{iteration}")
-        self.gaussians.save_ply(os.path.join(point_cloud_path, "point_cloud.ply"))
+    # def save(self, iteration):
+    #     point_cloud_path = os.path.join(self.model_path, f"point_cloud/iteration_{iteration}")
+    #     self.gaussians.save_ply(os.path.join(point_cloud_path, "point_cloud.ply"))
 
     def getTrainCameras(self) -> list[Camera]:
         return self.train_cameras

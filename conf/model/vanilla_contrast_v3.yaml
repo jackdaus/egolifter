@@ -1,0 +1,5 @@
+defaults:
+  - vanilla
+
+name: "vanilla_contrast_v3"
+dim_extra: 3
