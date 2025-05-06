@@ -36,6 +36,7 @@ from scene.cameras import camera_to_JSON, Camera
 from utils.constants import BAD_ARIA_PILOT_SCENES
 from utils.contrastive import ContrastManager
 from utils.contrastive_v2 import ContrastManagerV2
+from utils.contrastive_v4 import ContrastManagerV4
 
 class CameraDataset(Dataset):
     '''
@@ -254,6 +255,13 @@ class Scene:
                 )
             elif self.cfg.lift.name == "v2":
                 self.contrast_manager = ContrastManagerV2(
+                    cfg, 
+                    example_cam=self.train_cameras[0],
+                    valid_mask_by_name=self.valid_mask_by_name,
+                    scene_type=self.scene_type,
+                )
+            elif self.cfg.lift.name == "v4":
+                self.contrast_manager = ContrastManagerV4(
                     cfg, 
                     example_cam=self.train_cameras[0],
                     valid_mask_by_name=self.valid_mask_by_name,

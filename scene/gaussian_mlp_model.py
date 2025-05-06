@@ -72,7 +72,8 @@ class GaussianMLPModel(nn.Module):
         self._opacity = None
 
         # MLP for features
-        in_dim = 3 + 3 + 1  # xyz  +  log‑scales  + opacity   (change as desired)
+        # in_dim = 3 + 3 + 1  # xyz  +  log‑scales  + opacity (NOTE: used in experiment v3)
+        in_dim = 3 + 3        # xyz  +  log‑scales 
         hidden = 128
         self.extra_mlp = nn.Sequential(
             nn.Linear(in_dim, hidden), 
@@ -98,7 +99,7 @@ class GaussianMLPModel(nn.Module):
         return torch.cat([
             self._xyz.detach(),                   # 3
             self._scaling.detach(),               # 3
-            self._opacity.detach()                # 1
+            # self._opacity.detach()                # 1
         ], dim=1)
 
     def check_nan(self):

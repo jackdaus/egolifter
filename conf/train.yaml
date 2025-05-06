@@ -56,7 +56,7 @@ scene:
 
 lift:
   use_contr: !!bool False # whether to turn on the mask contrastive learning
-  name: "default" # options are: ["default", "v2"]
+  name: "default" # options are: ["default", "v2", "v4"]
   contr_dim: ${model.dim_extra} # The feature dimensions used for learning instance segmentation
   contr_multilabel: !!bool False # Use multilabel version for contrastive loss
   sum_out_log: !!bool False # If set, the summation will be inside of the log in the contrastive loss. 

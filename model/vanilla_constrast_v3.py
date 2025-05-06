@@ -55,14 +55,14 @@ class VanillaContrastV3(VanillaGaussian):
             point_scene = wandb.Object3D(
                 {"type": "lidar/beta", "points": extra_features_3D}
             )
-            wandb.log({"gaussian_vis/init_extra_features_3d": point_scene}, commit=True)
+            wandb.log({"gaussian_vis/extra_features_3d": point_scene}, commit=True)
         # TODO check if other dim visuals work as expected.
         elif self.gaussians.dim_extra == 2:
             extra_features_2D = self.gaussians.get_features_extra.detach().cpu().numpy()
             # use wandb scatter plot
             # extra_features_2D = extra_features_2D.reshape(-1, 2)
             table = wandb.Table(data=extra_features_2D, columns=["x", "y"])
-            wandb.log({"gaussian_vis/init_extra_features_2d": table}, commit=True)
+            wandb.log({"gaussian_vis/extra_features_2d": table}, commit=True)
         elif self.gaussians.dim_extra == 1:
             # Log the extra feature dims as a 1D image in wandb.
             extra_features_1D = self.gaussians.get_features_extra.detach().cpu().numpy()
