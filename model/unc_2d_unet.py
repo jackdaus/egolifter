@@ -145,7 +145,7 @@ class Unc2DUnet(VanillaGaussian):
             ).mean().double()
 
         render_pkg_feat = None
-        if self.use_contrast and viewpoint_cam.camera_name == "rgb":
+        if self.use_contrast and viewpoint_cam.camera_name == "rgb" and self.global_step >= self.cfg.lift.lift_delay_n_steps:
             static_mask = None if unc_mask is None else 1.0 - unc_mask 
             loss_contr, render_pkg_feat = self.forward_and_contr_loss(batch, weight_image=static_mask)
             losses['loss_mask_contr'] = loss_contr

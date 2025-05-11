@@ -23,7 +23,7 @@ import torch
 import torchvision
 import lightning as L
 from tqdm import tqdm
-from moviepy.editor import ImageSequenceClip, clips_array
+from moviepy import ImageSequenceClip, clips_array
 
 from scene.dataset_readers import SceneType
 from model.unc_2d_unet import Unc2DUnet

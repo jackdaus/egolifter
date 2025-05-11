@@ -22,12 +22,21 @@ gsplat
 .datasets
 adt
 adt_processed
+adt_processed_new
+adt_0_input_video
+adt_1_init_masks
+adt_2_masks
+adt_processed_sam2
 checkpoints 
 
 # Downloaded model weights
 sam_vit_h_4b8939.pth
 groundingdino_swint_ogc.pth
 sam_vit_b_01ec64.pth
+sam2.1_hiera_base_plus.pt
+sam2.1_hiera_large.pt
+sam2.1_hiera_small.pt
+sam2.1_hiera_tiny.pt
 
 # Rerun files
 *.rrd

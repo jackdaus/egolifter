@@ -193,6 +193,7 @@ class GaussianModel(nn.Module):
         features[:, 3:, 1:] = 0.0
 
         # Make features_extra initialized from a small normal distribution
+        # NOTE: maybe something to revisit?
         features_extra = 1e-3 * torch.normal(
             mean=0.0, std=1.0, 
             size=(fused_color.shape[0], self.dim_extra)
@@ -479,11 +480,10 @@ class GaussianModel(nn.Module):
         wandb.log({"gaussians/prune_n_opacity": prune_mask.sum().item()}, commit=False)
         if max_screen_size:
             big_points_vs = self.max_radii2D > max_screen_size
-            # TEMP JD: remove wordspace pruning... doesn't work well with camera space extent is small
             big_points_ws = self.get_scaling.max(dim=1).values > 0.1 * extent
             wandb.log({"gaussians/prune_n_vs_radii": big_points_vs.sum().item()}, commit=False)
-            # wandb.log({"gaussians/prune_n_ws_radii": big_points_ws.sum().item()}, commit=False)
-            # prune_mask = torch.logical_or(torch.logical_or(prune_mask, big_points_vs), big_points_ws)
+            wandb.log({"gaussians/prune_n_ws_radii": big_points_ws.sum().item()}, commit=False)
+            prune_mask = torch.logical_or(torch.logical_or(prune_mask, big_points_vs), big_points_ws)
             prune_mask = torch.logical_or(prune_mask, big_points_vs)
         self.prune_points(prune_mask)
 

@@ -5,7 +5,7 @@
 # LICENSE file in the root directory of this source tree.
 
 # You probably only need to change the following 1-2 lines
-export EGOLIFTER_PATH=${HOME}/src/egolifter/
+export EGOLIFTER_PATH=${HOME}/egolifter/
 export GSA_PATH=${EGOLIFTER_PATH}/Grounded-Segment-Anything/
 
 # Paths related to GroundedSAM

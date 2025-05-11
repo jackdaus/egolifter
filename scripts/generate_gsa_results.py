@@ -32,6 +32,9 @@ import dataclasses
 
 import open_clip
 
+from sam2.build_sam import build_sam2
+from sam2.automatic_mask_generator import SAM2AutomaticMaskGenerator
+
 # import Grounded SAM
 from groundingdino.util.inference import Model
 from segment_anything import sam_model_registry, SamPredictor, SamAutomaticMaskGenerator
@@ -268,6 +271,15 @@ def get_sam_mask_generator(variant:str, device: str | int) -> SamAutomaticMaskGe
         # )
         mask_generator = SamAutomaticMaskGenerator(sam) # Use the default arguments
         return mask_generator
+    elif variant == "sam2":
+        # define your model config and checkpoint paths
+        sam2_checkpoint = "./sam2.1_hiera_large.pt"
+        model_cfg = "configs/sam2.1/sam2.1_hiera_l.yaml"
+        # build the SAM2 model
+        sam2_model = build_sam2(model_cfg, sam2_checkpoint, device=device, apply_postprocessing=False)
+        # create the automatic mask generator
+        mask_generator2 = SAM2AutomaticMaskGenerator(sam2_model)
+        return mask_generator2
     elif variant == "fastsam":
         raise NotImplementedError
         # from ultralytics import YOLO
@@ -284,7 +296,8 @@ def get_sam_predictor(variant: str, device: str | int) -> SamPredictor:
         sam.to(device)
         sam_predictor = SamPredictor(sam)
         return sam_predictor
-        
+    elif variant == "sam2":
+        raise NotImplementedError
     # TODO: (low priority) add support for other variants, as shown below
     # elif variant == "mobilesam":
     #     from MobileSAM.setup_mobile_sam import setup_model
@@ -342,7 +355,7 @@ def get_sam_segmentation_dense(
         xyxy: (N, 4)
         conf: (N,)
     '''
-    if variant == "sam":
+    if variant == "sam" or variant == "sam2":
         results = model.generate(image)
         mask = []
         xyxy = []
@@ -395,6 +408,7 @@ def process_tag_classes(text_prompt:str, add_classes:list[str]=[], remove_classe
 
 @torch.no_grad()
 def main(args: argparse.Namespace):
+    print("Input folder: ", args.input_folder)
     ### Initialize the SAM model ###
     if args.class_set == "none":
         # Generate the masks in dense fashion
@@ -464,6 +478,7 @@ def main(args: argparse.Namespace):
         print("Skipping tagging and detection models. ")
     else:
         print(f"{args.class_set} will be used to detect classes. ")
+
 
     ##### initialize the dataset #####
     rotate_back = False
@@ -684,7 +699,7 @@ if __name__ == "__main__":
                         help="The stride in subsampling a subset from all input frames. ")
     
     parser.add_argument("--sam_variant", type=str, default="sam", 
-                        choices=["sam", "mobilesam", "lighthqsam", "fastsam"],
+                        choices=["sam", "sam2", "mobilesam", "lighthqsam", "fastsam"],
                         help="The variant of the SAM model to use.")
     
     parser.add_argument("--class_set", type=str, default="ram",

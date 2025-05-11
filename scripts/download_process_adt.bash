@@ -108,23 +108,23 @@ for SCENE_NAME in "${SCENE_NAMES[@]}"; do
 done
 
 # Generate evaluation target for query-based segmentation
-# for SCENE_NAME in "${SCENE_NAMES[@]}"; do
-#     python scripts/generate_2dseg_query.py \
-#         --data_root ${ADT_PROCESSED_ROOT} \
-#         --scene_name ${SCENE_NAME} &
-# done
+for SCENE_NAME in "${SCENE_NAMES[@]}"; do
+    python scripts/generate_2dseg_query.py \
+        --data_root ${ADT_PROCESSED_ROOT} \
+        --scene_name ${SCENE_NAME} &
+done
 
-# wait
+wait
 
-# for SCENE_NAME in "${SCENE_NAMES[@]}"; do
-#     python scripts/generate_2dseg_query_sample.py \
-#         --data_root ${ADT_PROCESSED_ROOT} \
-#         --scene_name ${SCENE_NAME}
-# done
+for SCENE_NAME in "${SCENE_NAMES[@]}"; do
+    python scripts/generate_2dseg_query_sample.py \
+        --data_root ${ADT_PROCESSED_ROOT} \
+        --scene_name ${SCENE_NAME}
+done
 
-# for SCENE_NAME in "${SCENE_NAMES[@]}"; do
-#     python scripts/generate_3dbox_query.py \
-#         --raw_root ${ADT_DATA_ROOT} \
-#         --data_root ${ADT_PROCESSED_ROOT} \
-#         --scene_name ${SCENE_NAME}
-# done
+for SCENE_NAME in "${SCENE_NAMES[@]}"; do
+    python scripts/generate_3dbox_query.py \
+        --raw_root ${ADT_DATA_ROOT} \
+        --data_root ${ADT_PROCESSED_ROOT} \
+        --scene_name ${SCENE_NAME}
+done
